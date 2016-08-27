@@ -9,7 +9,7 @@ public class NotesGrid : MonoBehaviour {
 	public static readonly ushort EMPTY_CELL	= (ushort) (NB_LINES * NB_COLUMNS);
 
 	List<Note>	m_notes;
-	ushort[,]	m_positions;
+	ushort[,]	m_grid;
 
 	[SerializeField] ushort m_nbNotesToStart	= 2;
 	[SerializeField] ushort m_nbNotesMax		= 25;
@@ -18,10 +18,10 @@ public class NotesGrid : MonoBehaviour {
 	void Start () {
 		// initialize the list with the capacity
 		m_notes = new List<Note>(m_nbNotesMax);
-		m_positions = new ushort[NB_LINES,NB_COLUMNS];
+		m_grid = new ushort[NB_LINES,NB_COLUMNS];
 		for (ushort i=0; i<NB_LINES; ++i) {
 			for (ushort j=0; j<NB_COLUMNS; ++j) {
-				m_positions[i, j] = EMPTY_CELL;
+				m_grid[i, j] = EMPTY_CELL;
 			}
 		}
 
@@ -56,18 +56,18 @@ public class NotesGrid : MonoBehaviour {
 
 	void FixedUpdate() {
 		// check if some notes should be back on top
-		ushort[,] newPositions = new ushort[NB_LINES, NB_COLUMNS];
+		ushort[,] newGrid = new ushort[NB_LINES, NB_COLUMNS];
 
 		for (ushort i=0; i<NB_LINES; i++) {
 			for (ushort j=0; j<NB_COLUMNS; j++) {
-				newPositions[i, j] = EMPTY_CELL;
+				newGrid[i, j] = EMPTY_CELL;
 			}
 		}
 
 		for (ushort i=0; i<NB_LINES; i++) {
 			for (ushort j=0; j<NB_COLUMNS; j++) {
-				if (m_positions[i, j] != EMPTY_CELL) {
-					ushort noteIndex = m_positions[i, j];
+				if (m_grid[i, j] != EMPTY_CELL) {
+					ushort noteIndex = m_grid[i, j];
 					Note currentNote = m_notes[noteIndex];
 
 					// if the note is on the last line
@@ -87,7 +87,7 @@ public class NotesGrid : MonoBehaviour {
 						}
 
 						// in any case, move down the note
-						newPositions[i+1, j] = noteIndex;
+						newGrid[i+1, j] = noteIndex;
 						Utils.SetLocalPositionXY(
 							currentNote.transform,
 							j * 32,
@@ -98,7 +98,7 @@ public class NotesGrid : MonoBehaviour {
 			}
 		}
 
-		m_positions = newPositions;
+		m_grid = newGrid;
 	}
 
 	bool PlaceNote(ushort _noteIndex) {
@@ -109,9 +109,9 @@ public class NotesGrid : MonoBehaviour {
 			// get a random column
 			ushort col = (ushort) Random.Range(0, NB_COLUMNS);
 
-			if (m_positions[0, col] == EMPTY_CELL)
+			if (m_grid[0, col] == EMPTY_CELL)
 			{
-				m_positions[0, col] = _noteIndex;
+				m_grid[0, col] = _noteIndex;
 
 				replace = false;
 			}
