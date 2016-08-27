@@ -1,0 +1,26 @@
+﻿using UnityEngine;
+using System.Collections;
+
+public class Note : MonoBehaviour {
+
+	// Use this for initialization
+	void Start () {
+	
+	}
+	
+	// Update is called once per frame
+	void Update () {
+		// do nothing
+	}
+
+	void FixedUpdate() {
+		// check if on last line
+		{
+			// check player collision
+			// otherwise add points
+		}
+		{
+			// otherwise move
+		}
+	}
+}
