@@ -2,12 +2,11 @@
 using System.Collections;
 
 public class Note : MonoBehaviour {
-
-	NotesGrid	m_grid;
-	ushort		m_index;
-	bool		m_active;
-
+	ushort			m_index;
+	bool			m_active;
 	SpriteRenderer	m_renderer;
+
+	[SerializeField] float m_speed = 1;
 
 	// Use this for initialization
 	void Start () {
@@ -16,17 +15,14 @@ public class Note : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		// do nothing
-
+		// render only when active
 		m_renderer.enabled = m_active;
-	}
 
-	void FixedUpdate() {
-		// do nothing
-	}
-
-	public void SetGrid(NotesGrid _grid) {
-		m_grid = _grid;
+		if (m_active) {
+			// move down
+			float newY = transform.position.y - m_speed * Time.deltaTime;
+			Utils.SetLocalPositionY(transform, newY);
+		}
 	}
 
 	public void SetIndex(ushort _index) {

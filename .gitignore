@@ -31,3 +31,8 @@ obj/
 .Trashes
 ehthumbs.db
 Thumbs.db
+
+# ===== #
+# Build #
+# ===== #
+Build/

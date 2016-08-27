@@ -7,6 +7,8 @@ public class NotesGrid : MonoBehaviour {
 	public static readonly ushort NB_COLUMNS	= 5;
 	public static readonly ushort PLAYER_LINE	= 4;
 	public static readonly ushort EMPTY_CELL	= (ushort) (NB_LINES * NB_COLUMNS);
+	public static readonly ushort CELL_WIDTH	= 32;
+	public static readonly ushort CELL_HEIGHT	= 32;
 
 	List<Note>	m_notes;
 	ushort[,]	m_grid;
@@ -36,6 +38,8 @@ public class NotesGrid : MonoBehaviour {
 			Note scriptNote = note.GetComponent<Note>();
 			scriptNote.SetIndex(i);
 
+			m_notes.Add(scriptNote);
+
 			if (i<m_nbNotesToStart)
 			{
 				// place note
@@ -44,8 +48,6 @@ public class NotesGrid : MonoBehaviour {
 			else {
 				scriptNote.SetActive(false);
 			}
-
-			m_notes.Add(scriptNote);
 		}
 	}
 	
@@ -64,7 +66,7 @@ public class NotesGrid : MonoBehaviour {
 			}
 		}
 
-		for (ushort i=0; i<NB_LINES; i++) {
+		/*for (ushort i=0; i<NB_LINES; i++) {
 			for (ushort j=0; j<NB_COLUMNS; j++) {
 				if (m_grid[i, j] != EMPTY_CELL) {
 					ushort noteIndex = m_grid[i, j];
@@ -96,7 +98,7 @@ public class NotesGrid : MonoBehaviour {
 					}
 				}
 			}
-		}
+		}*/
 
 		m_grid = newGrid;
 	}
@@ -112,6 +114,7 @@ public class NotesGrid : MonoBehaviour {
 			if (m_grid[0, col] == EMPTY_CELL)
 			{
 				m_grid[0, col] = _noteIndex;
+				Utils.SetLocalPositionX(m_notes[_noteIndex].transform, col * 0.32f);
 
 				replace = false;
 			}
