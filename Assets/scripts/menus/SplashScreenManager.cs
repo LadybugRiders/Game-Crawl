@@ -44,7 +44,7 @@ public class SplashScreenManager : MonoBehaviour {
 	}
 
 	void FadeOut(){
-		m_alpha -= m_speed * Time.deltaTime;
+		m_alpha -= m_speed * 2 * Time.deltaTime;
 		Utils.SetAlpha (m_logo, m_alpha);
 		if (m_alpha <= 0.0f) {
 			SceneManager.LoadScene ("main_menu");
