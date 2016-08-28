@@ -14,20 +14,20 @@ public class Note : MonoBehaviour {
 	[SerializeField] float m_speed = 1.0f;
 
 	// Use this for initialization
-	void Start () {
+	void Awake () {
 		m_renderer = GetComponent<SpriteRenderer>();
 	}
 	
 	// Update is called once per frame
 	void Update () {
 		// render only when active
-		m_renderer.enabled = m_active;
+		//m_renderer.enabled = m_active;
 
-		if (m_active) {
+		/*if (m_active) {
 			// move down
 			float newY = transform.localPosition.y - (NOTE_SPEED * Time.deltaTime);
 			Utils.SetLocalPositionY(transform, newY);
-		}
+		}*/
 	}
 
 	public void SetGrid(NotesGrid _grid) {
@@ -44,13 +44,12 @@ public class Note : MonoBehaviour {
 
 	public void SetActive(bool _active) {
 		m_active = _active;
+		m_renderer.enabled = m_active;
 	}
 
 	void OnTriggerEnter2D(Collider2D other) {
 		if (other.gameObject.layer == LayerMask.NameToLayer ("Default")) {
 			m_active = false;
-			int score = PlayerPrefs.GetInt ("current_score") + 1;
-			PlayerPrefs.SetInt ("current_score", score);
 		}
 	}
 }
