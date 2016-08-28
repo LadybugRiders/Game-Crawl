@@ -7,7 +7,7 @@ public class NotesGrid : MonoBehaviour {
 	public static readonly ushort NB_COLUMNS	= 5;
 	public static readonly ushort PLAYER_LINE	= 4;
 	public static readonly ushort EMPTY_CELL	= (ushort) (NB_LINES * NB_COLUMNS);
-	public static readonly ushort CELL_WIDTH	= 54;
+	public static readonly ushort CELL_WIDTH	= 76;
 	public static readonly ushort CELL_HEIGHT	= 90;
 
 	List<Note>	m_notes;
@@ -62,7 +62,7 @@ public class NotesGrid : MonoBehaviour {
 			replace = false;
 
 			// get random x and y
-			float newX = Random.Range(0, NB_COLUMNS) * CELL_WIDTH * 0.01f;
+			float newX = (Random.Range(0, NB_COLUMNS) * CELL_WIDTH + (CELL_WIDTH - Note.NOTE_WIDTH * 0.5f)) * 0.01f;
 			float newY = Random.Range(1, NB_LINES) * CELL_HEIGHT * 0.01f;
 			Utils.SetLocalPositionXY(processedNote.transform, newX, newY);
 

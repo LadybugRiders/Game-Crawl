@@ -2,12 +2,15 @@
 using System.Collections;
 
 public class Note : MonoBehaviour {
+
+	public static readonly ushort NOTE_WIDTH	= 38;
+
 	NotesGrid		m_grid;
 	ushort			m_index;
 	bool			m_active;
 	SpriteRenderer	m_renderer;
 
-	[SerializeField] float m_speed = 0.01f;
+	[SerializeField] float m_speed = 1.0f;
 
 	// Use this for initialization
 	void Start () {
@@ -21,7 +24,7 @@ public class Note : MonoBehaviour {
 
 		if (m_active) {
 			// move down
-			float newY = transform.position.y - m_speed * Time.deltaTime;
+			float newY = transform.localPosition.y - (m_speed * Time.deltaTime);
 			Utils.SetLocalPositionY(transform, newY);
 		}
 	}
