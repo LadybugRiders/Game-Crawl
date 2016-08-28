@@ -19,6 +19,8 @@ public class NoteGridsGenerator : MonoBehaviour {
 	[SerializeField] int m_nbGrids = 2;
 	[SerializeField] float m_gridSpeed = 1.3f;
 
+	[SerializeField] uint m_nbPlayableNotesPerGrid = 2;
+
 	public void Awake(){
 		m_grids = new List<NotesMovingGrid> ();
 		GameObject prefabGrid = Resources.Load("prefabs/MovingGrid") as GameObject;
@@ -33,16 +35,24 @@ public class NoteGridsGenerator : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-		List<uint> test = new List<uint> () {
+		// init random
+		Random.seed = (int) System.DateTime.Now.Ticks;
+
+		/*List<uint> test = new List<uint> () {
 			0,0,0,0,0,
 			0,0,2,0,0,
 			0,0,0,0,0,
 			0,1,0,1,0,
 			0,0,1,0,0
 		};
-		GenerateGrid (test);
-		GenerateGrid (test);
-		GenerateGrid (test);
+
+		GenerateNotes (test);
+		GenerateNotes (test);
+		GenerateNotes (test);*/
+
+		GenerateNotes (GenerateGrid());
+		GenerateNotes (GenerateGrid());
+		GenerateNotes (GenerateGrid());
 	}
 	
 	// Update is called once per frame
@@ -50,7 +60,39 @@ public class NoteGridsGenerator : MonoBehaviour {
 		CheckDeadGrids ();
 	}
 
-	public NotesMovingGrid GenerateGrid(List<uint> _grid, bool autolaunch = true){	
+	List<uint> GenerateGrid() {
+		// initialize grid
+		List<uint> grid = new List<uint>(NB_LINES * NB_COLUMNS);
+		for (uint i=0; i<NB_LINES * NB_COLUMNS; i++) {
+			grid.Add(0);
+		}
+
+		// place playable notes
+		for (uint i=0; i<m_nbPlayableNotesPerGrid; ++i) {
+			bool searchAgain = true;
+			uint infiniteLoopChecker = 0;
+			uint nbLoopsMax = 10;
+			while (searchAgain && infiniteLoopChecker < nbLoopsMax) {
+				int x = Random.Range(0, NB_COLUMNS);
+				int y = Random.Range(0, NB_LINES);
+
+				int index = y * NB_COLUMNS + x;
+
+				// if the cell is free
+				if (grid[index] == 0) {
+					// place a note here
+					grid[index] = 1;
+					searchAgain = false;
+				}
+
+				++infiniteLoopChecker;
+			}
+		}
+
+		return grid;
+	}
+
+	public NotesMovingGrid GenerateNotes(List<uint> _grid, bool autolaunch = true){	
 		// load prefab "Note"
 		GameObject prefabNote = Resources.Load("prefabs/Note") as GameObject;
 		GameObject prefabBonus = Resources.Load("prefabs/BonusNote") as GameObject;
