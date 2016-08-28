@@ -11,21 +11,18 @@ public class NotesGrid : MonoBehaviour {
 	public static readonly ushort CELL_HEIGHT	= 32;
 
 	List<Note>	m_notes;
-	ushort[,]	m_grid;
+	ushort		m_nbPlayableNotes;
 
 	[SerializeField] ushort m_nbNotesToStart	= 2;
 	[SerializeField] ushort m_nbNotesMax		= 25;
 
 	// Use this for initialization
 	void Start () {
+		// init random
+		Random.seed = (int) System.DateTime.Now.Ticks;
+
 		// initialize the list with the capacity
 		m_notes = new List<Note>(m_nbNotesMax);
-		m_grid = new ushort[NB_LINES,NB_COLUMNS];
-		for (ushort i=0; i<NB_LINES; ++i) {
-			for (ushort j=0; j<NB_COLUMNS; ++j) {
-				m_grid[i, j] = EMPTY_CELL;
-			}
-		}
 
 		// load prefab "Note"
 		GameObject prefabNote = Resources.Load("prefabs/Note") as GameObject;
@@ -36,6 +33,7 @@ public class NotesGrid : MonoBehaviour {
 			note.transform.SetParent(transform, false);
 
 			Note scriptNote = note.GetComponent<Note>();
+			scriptNote.SetGrid(this);
 			scriptNote.SetIndex(i);
 
 			m_notes.Add(scriptNote);
@@ -44,6 +42,9 @@ public class NotesGrid : MonoBehaviour {
 			{
 				// place note
 				scriptNote.SetActive(PlaceNote(i));
+
+				// increase playable notes
+				++m_nbPlayableNotes;
 			}
 			else {
 				scriptNote.SetActive(false);
@@ -53,76 +54,72 @@ public class NotesGrid : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		// do nothing
-	}
-
-	void FixedUpdate() {
-		// check if some notes should be back on top
-		ushort[,] newGrid = new ushort[NB_LINES, NB_COLUMNS];
-
-		for (ushort i=0; i<NB_LINES; i++) {
-			for (ushort j=0; j<NB_COLUMNS; j++) {
-				newGrid[i, j] = EMPTY_CELL;
-			}
-		}
-
-		/*for (ushort i=0; i<NB_LINES; i++) {
-			for (ushort j=0; j<NB_COLUMNS; j++) {
-				if (m_grid[i, j] != EMPTY_CELL) {
-					ushort noteIndex = m_grid[i, j];
-					Note currentNote = m_notes[noteIndex];
-
-					// if the note is on the last line
-					if (i == NB_LINES - 1) {
-						// note can't move down anymore
-						// deactivate the note
-						currentNote.SetActive(false);
-					}
-					else {
-
-						// if the note is on the player's line
-						if (i == PLAYER_LINE) {
-							// check player collision
-							if (false) {
-								// game over
-							}
-						}
-
-						// in any case, move down the note
-						newGrid[i+1, j] = noteIndex;
-						Utils.SetLocalPositionXY(
-							currentNote.transform,
-							j * 32,
-							-(i+1) * 32
-						);
-					}
-				}
-			}
-		}*/
-
-		m_grid = newGrid;
+		ActivePlayableNotes();
 	}
 
 	bool PlaceNote(ushort _noteIndex) {
 		bool replace = true;
+
+		Note processedNote = m_notes[_noteIndex];
+
+		float oldX = processedNote.transform.position.x;
+		float oldY = processedNote.transform.position.y;
+
 		ushort infiniteLoopChecker = 0;
 		const ushort nbLoopsMax = 10;
+		// try at worst 10 times
 		while (replace && infiniteLoopChecker < nbLoopsMax) {
-			// get a random column
-			ushort col = (ushort) Random.Range(0, NB_COLUMNS);
+			replace = false;
 
-			if (m_grid[0, col] == EMPTY_CELL)
-			{
-				m_grid[0, col] = _noteIndex;
-				Utils.SetLocalPositionX(m_notes[_noteIndex].transform, col * 0.32f);
+			// get random x and y
+			float newX = oldX + Random.Range(0, NB_COLUMNS) * CELL_WIDTH * 0.01f;
+			float newY = oldY + Random.Range(0.0f - NB_LINES * CELL_HEIGHT * 0.01f, 0.0f);
+			Utils.SetLocalPositionXY(processedNote.transform, newX, newY);
 
-				replace = false;
+			// get processed note collider
+			Collider2D processedNoteCollider = processedNote.GetComponent<Collider2D>();
+
+			bool noCollision = true;
+			// check if the new position doesn't imply a collision with other playable notes
+			for (ushort i=0; i<m_nbPlayableNotes; ++i) {
+				Note currentNote = m_notes[i];
+
+				// if current note is not the processed note and is active
+				if (i != _noteIndex && currentNote.IsActive()) {
+					// get current note collider
+					Collider2D currentNoteCollider = currentNote.GetComponent<Collider2D>();
+					// check for a potential collision
+					if (processedNoteCollider.IsTouching(currentNoteCollider)) {
+						noCollision = false;
+						// stop the loop and try with a new position
+						break;
+					}
+				}
 			}
-			else {
-				++infiniteLoopChecker;
-			}
+
+			// if we didn't find any collision, don't need to try replacing the note
+			replace = !noCollision;
+
+			++infiniteLoopChecker;
 		}
 
-		return infiniteLoopChecker < nbLoopsMax;
+		// if we don't find a correct place, restore old x and y position
+		if (replace) {
+			Utils.SetLocalPositionXY(processedNote.transform, oldX, oldY);
+		}
+
+		return !replace;
+	}
+
+	void ActivePlayableNotes() {
+		for (ushort i=0; i<m_nbPlayableNotes; ++i) {
+			Note currentNote = m_notes[i];
+
+			// if current note is inactive
+			if (!currentNote.IsActive()) {
+				// try to place it and active it in case of success
+				currentNote.SetActive(PlaceNote(i));
+			}
+		}
 	}
 }
