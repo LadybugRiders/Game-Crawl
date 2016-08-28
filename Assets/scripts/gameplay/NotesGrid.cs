@@ -7,8 +7,8 @@ public class NotesGrid : MonoBehaviour {
 	public static readonly ushort NB_COLUMNS	= 5;
 	public static readonly ushort PLAYER_LINE	= 4;
 	public static readonly ushort EMPTY_CELL	= (ushort) (NB_LINES * NB_COLUMNS);
-	public static readonly ushort CELL_WIDTH	= 32;
-	public static readonly ushort CELL_HEIGHT	= 32;
+	public static readonly ushort CELL_WIDTH	= 54;
+	public static readonly ushort CELL_HEIGHT	= 90;
 
 	List<Note>	m_notes;
 	ushort		m_nbPlayableNotes;
@@ -23,11 +23,12 @@ public class NotesGrid : MonoBehaviour {
 
 		// initialize the list with the capacity
 		m_notes = new List<Note>(m_nbNotesMax);
+		m_nbPlayableNotes = 2;
 
 		// load prefab "Note"
 		GameObject prefabNote = Resources.Load("prefabs/Note") as GameObject;
 
-		// create notes (with prefab), store their scripts and place them
+		// create notes (with prefab) and store their scripts
 		for (ushort i=0; i<m_nbNotesMax; ++i) {
 			GameObject note = Instantiate(prefabNote);
 			note.transform.SetParent(transform, false);
@@ -35,20 +36,9 @@ public class NotesGrid : MonoBehaviour {
 			Note scriptNote = note.GetComponent<Note>();
 			scriptNote.SetGrid(this);
 			scriptNote.SetIndex(i);
+			scriptNote.SetActive(false);
 
 			m_notes.Add(scriptNote);
-
-			if (i<m_nbNotesToStart)
-			{
-				// place note
-				scriptNote.SetActive(PlaceNote(i));
-
-				// increase playable notes
-				++m_nbPlayableNotes;
-			}
-			else {
-				scriptNote.SetActive(false);
-			}
 		}
 	}
 	
@@ -72,8 +62,9 @@ public class NotesGrid : MonoBehaviour {
 			replace = false;
 
 			// get random x and y
-			float newX = oldX + Random.Range(0, NB_COLUMNS) * CELL_WIDTH * 0.01f;
-			float newY = oldY + Random.Range(0.0f - NB_LINES * CELL_HEIGHT * 0.01f, 0.0f);
+			float newX = Random.Range(0, NB_COLUMNS) * CELL_WIDTH * 0.01f;
+			//float newY = Random.Range(0.0f, NB_LINES * CELL_HEIGHT * 0.01f);
+			float newY = 0.0f;
 			Utils.SetLocalPositionXY(processedNote.transform, newX, newY);
 
 			// get processed note collider
