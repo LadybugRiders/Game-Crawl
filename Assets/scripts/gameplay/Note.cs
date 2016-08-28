@@ -9,7 +9,7 @@ public class Note : MonoBehaviour {
 	NotesGrid		m_grid;
 	ushort			m_index;
 	protected bool	m_active;
-	SpriteRenderer	m_renderer;
+	protected SpriteRenderer	m_renderer;
 
 	public enum NoteType { NORMAL, BONUS }
 	protected NoteType type = NoteType.NORMAL;
@@ -46,7 +46,7 @@ public class Note : MonoBehaviour {
 		return m_active;
 	}
 
-	public void SetActive(bool _active) {
+	public virtual void SetActive(bool _active) {
 		m_active = _active;
 		m_renderer.enabled = m_active;
 	}

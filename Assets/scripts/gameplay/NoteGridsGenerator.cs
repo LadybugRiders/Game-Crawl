@@ -38,7 +38,7 @@ public class NoteGridsGenerator : MonoBehaviour {
 		// init random
 		Random.seed = (int) System.DateTime.Now.Ticks;
 
-		/*List<uint> test = new List<uint> () {
+		List<uint> test = new List<uint> () {
 			0,0,0,0,0,
 			0,0,2,0,0,
 			0,0,0,0,0,
@@ -48,11 +48,11 @@ public class NoteGridsGenerator : MonoBehaviour {
 
 		GenerateNotes (test);
 		GenerateNotes (test);
-		GenerateNotes (test);*/
+		GenerateNotes (test);
 
+		/*GenerateNotes (GenerateGrid());
 		GenerateNotes (GenerateGrid());
-		GenerateNotes (GenerateGrid());
-		GenerateNotes (GenerateGrid());
+		GenerateNotes (GenerateGrid());*/
 	}
 	
 	// Update is called once per frame
