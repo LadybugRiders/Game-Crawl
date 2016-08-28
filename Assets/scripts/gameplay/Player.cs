@@ -6,6 +6,8 @@ public class Player : MonoBehaviour {
 
 	[SerializeField] float m_step = 10;
 
+	int m_position = 2;
+
 	// Use this for initialization
 	void Start () {
 		PlayerPrefs.SetInt ("current_score",0);
@@ -18,11 +20,17 @@ public class Player : MonoBehaviour {
 
 	public void MoveLeft()
 	{
+		if (m_position <= 0)
+			return;
+		m_position--;
 		Utils.SetLocalPositionX(transform,transform.localPosition.x - m_step);
 	}
 
 	public void MoveRight()
 	{
+		if (m_position >=4)
+			return;
+		m_position++;
 		Utils.SetLocalPositionX(transform, transform.localPosition.x + m_step);
 	}
 
