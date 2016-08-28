@@ -3,7 +3,8 @@ using System.Collections;
 
 public class Note : MonoBehaviour {
 
-	public static readonly ushort NOTE_WIDTH	= 38;
+	public static readonly ushort 	NOTE_WIDTH	= 38;
+	public static readonly float	NOTE_SPEED	= 1.0f;
 
 	NotesGrid		m_grid;
 	ushort			m_index;
@@ -24,7 +25,7 @@ public class Note : MonoBehaviour {
 
 		if (m_active) {
 			// move down
-			float newY = transform.localPosition.y - (m_speed * Time.deltaTime);
+			float newY = transform.localPosition.y - (NOTE_SPEED * Time.deltaTime);
 			Utils.SetLocalPositionY(transform, newY);
 		}
 	}
