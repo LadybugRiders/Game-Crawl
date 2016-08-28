@@ -13,7 +13,7 @@ public class NotesGrid : MonoBehaviour {
 	List<Note>	m_notes;
 	ushort		m_nbPlayableNotes;
 
-	[SerializeField] ushort m_nbNotesToStart	= 2;
+	[SerializeField] ushort m_nbNotesToStart	= 5;
 	[SerializeField] ushort m_nbNotesMax		= 25;
 
 	// Use this for initialization
@@ -23,7 +23,7 @@ public class NotesGrid : MonoBehaviour {
 
 		// initialize the list with the capacity
 		m_notes = new List<Note>(m_nbNotesMax);
-		m_nbPlayableNotes = 2;
+		m_nbPlayableNotes = m_nbNotesToStart;
 
 		// load prefab "Note"
 		GameObject prefabNote = Resources.Load("prefabs/Note") as GameObject;
@@ -63,12 +63,8 @@ public class NotesGrid : MonoBehaviour {
 
 			// get random x and y
 			float newX = Random.Range(0, NB_COLUMNS) * CELL_WIDTH * 0.01f;
-			//float newY = Random.Range(0.0f, NB_LINES * CELL_HEIGHT * 0.01f);
-			float newY = 0.0f;
+			float newY = Random.Range(1, NB_LINES) * CELL_HEIGHT * 0.01f;
 			Utils.SetLocalPositionXY(processedNote.transform, newX, newY);
-
-			// get processed note collider
-			Collider2D processedNoteCollider = processedNote.GetComponent<Collider2D>();
 
 			bool noCollision = true;
 			// check if the new position doesn't imply a collision with other playable notes
@@ -77,10 +73,10 @@ public class NotesGrid : MonoBehaviour {
 
 				// if current note is not the processed note and is active
 				if (i != _noteIndex && currentNote.IsActive()) {
-					// get current note collider
-					Collider2D currentNoteCollider = currentNote.GetComponent<Collider2D>();
+					float currentX = currentNote.transform.localPosition.x;
+					float currentY = currentNote.transform.localPosition.y;
 					// check for a potential collision
-					if (processedNoteCollider.IsTouching(currentNoteCollider)) {
+					if (currentY > (newY - CELL_HEIGHT) && (int) (currentX * 100) == (int) (newX * 100)) {
 						noCollision = false;
 						// stop the loop and try with a new position
 						break;
