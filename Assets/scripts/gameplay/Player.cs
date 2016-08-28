@@ -36,8 +36,7 @@ public class Player : MonoBehaviour {
 
 	void OnTriggerEnter2D(Collider2D other){
 		if (other.gameObject.layer == LayerMask.NameToLayer ("Note")) {
-			Debug.Log ("dead");
-			SceneManager.LoadScene ("game_over");
+			//SceneManager.LoadScene ("game_over");
 		}
 	}
 }

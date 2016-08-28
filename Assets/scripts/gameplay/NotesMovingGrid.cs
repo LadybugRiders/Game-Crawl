@@ -8,9 +8,11 @@ public class NotesMovingGrid : MonoBehaviour {
 	bool m_active = false;
 	bool m_alive = false;
 
-	public List<Note> notes = new List<Note>();
+	public List<Note> m_notes = new List<Note>();
 
 	private float m_speed;
+
+	private Note m_topNote;
 
 	public void Awake(){
 		m_transform = transform;
@@ -20,6 +22,9 @@ public class NotesMovingGrid : MonoBehaviour {
 		if (m_alive) {
 			float newY = m_transform.localPosition.y + Time.deltaTime * m_speed;
 			Utils.SetLocalPositionY (m_transform, newY);
+			if (m_topNote.IsActive() == false) {
+				m_alive = false;
+			}
 		}
 	}
 
@@ -27,10 +32,13 @@ public class NotesMovingGrid : MonoBehaviour {
 		Utils.SetLocalPositionY (m_transform, startY);
 		m_speed = _speed;
 		m_alive = true;
+		foreach (var note in m_notes)
+			note.SetActive (true);
+		FindTopNote ();
 	}
 
 	public Note GetUnactiveNote (){
-		foreach (var note in notes) {
+		foreach (var note in m_notes) {
 			if (! note.IsActive() ) {
 				return note;
 			}
@@ -39,7 +47,7 @@ public class NotesMovingGrid : MonoBehaviour {
 	}
 
 	public void AddNote(Note _note){
-		notes.Add (_note);
+		m_notes.Add (_note);
 		_note.transform.SetParent (m_transform, false);
 	}
 
@@ -47,5 +55,17 @@ public class NotesMovingGrid : MonoBehaviour {
 		get {
 			return m_alive;
 		}
+	}
+
+	public void FindTopNote(){
+		float bestY = float.MinValue;
+		Note topnote = null;
+		foreach (var note in m_notes) {
+			if (note.transform.localPosition.y > bestY) {
+				bestY = note.transform.localPosition.y;
+				topnote = note;
+			}
+		}
+		m_topNote = topnote;
 	}
 }

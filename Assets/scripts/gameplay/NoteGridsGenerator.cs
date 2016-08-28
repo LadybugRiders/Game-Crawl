@@ -5,6 +5,10 @@ using System.Collections.Generic;
 public class NoteGridsGenerator : MonoBehaviour {
 
 	List<NotesMovingGrid> m_grids;
+	/// <summary>
+	/// Stack of launched grids. last element is the top grid 
+	/// </summary>
+	List<NotesMovingGrid> m_launchedGrids = new List<NotesMovingGrid>();
 
 	public static readonly ushort NB_LINES		= 6;
 	public static readonly ushort NB_COLUMNS	= 5;
@@ -30,7 +34,7 @@ public class NoteGridsGenerator : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 		List<uint> test = new List<uint> () {
-			0,1,0,0,0,
+			1,1,0,0,1,
 			0,1,0,0,0,
 			0,0,1,0,0,
 			0,1,1,1,0,
@@ -38,11 +42,12 @@ public class NoteGridsGenerator : MonoBehaviour {
 		};
 		GenerateGrid (test);
 		GenerateGrid (test);
+		GenerateGrid (test);
 	}
 	
 	// Update is called once per frame
 	void Update () {
-	
+		CheckDeadGrids ();
 	}
 
 	public NotesMovingGrid GenerateGrid(List<uint> _grid, bool autolaunch = true){	
@@ -86,18 +91,29 @@ public class NoteGridsGenerator : MonoBehaviour {
 			startY = topGrid.transform.localPosition.y + (CELL_HEIGHT * NB_LINES * 0.01f);
 		}
 		_grid.Launch (m_gridSpeed, startY);
+		m_launchedGrids.Add (_grid);
 	}
 
 	public NotesMovingGrid GetTopGrid(){
-		float bestY = float.MinValue;
-		NotesMovingGrid topGrid = null;
-		foreach (var grid in m_grids) {
-			if (grid.IsAlive && grid.transform.localPosition.y >= bestY) {
-				topGrid = grid;
-				bestY = grid.transform.localPosition.y;
-			}
+		if (m_launchedGrids != null && m_launchedGrids.Count > 0) {
+			return m_launchedGrids [m_launchedGrids.Count - 1];
 		}
-		return topGrid;
+		return null;
+	}
+
+	public NotesMovingGrid GetBottomGrid(){
+		if (m_launchedGrids != null && m_launchedGrids.Count > 0) {
+			return m_launchedGrids [0 ];
+		}
+		return null;
+	}
+
+	public void CheckDeadGrids(){
+		var bottomGrid = GetBottomGrid ();
+		if (bottomGrid && !bottomGrid.IsAlive) {
+			m_launchedGrids.Remove (bottomGrid);
+			LaunchGrid (bottomGrid);
+		}
 	}
 
 	public NotesMovingGrid GetFreeGrid(){
