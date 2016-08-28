@@ -41,4 +41,10 @@ public class Note : MonoBehaviour {
 	public void SetActive(bool _active) {
 		m_active = _active;
 	}
+
+	void OnTriggerEnter2D(Collider2D other) {
+		if (other.gameObject.layer == LayerMask.NameToLayer ("Default")) {
+			Debug.Log ("dead");
+		}
+	}
 }

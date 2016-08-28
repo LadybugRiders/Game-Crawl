@@ -4,17 +4,17 @@ using System.Collections;
 public class MoveCommandParameter : CommandParameter {
 
 	MoveCommand.Direction m_direction;
-	PlayerDebug m_player;
+	Player m_player;
 
 	public MoveCommandParameter(){
 	}
 
-	public MoveCommandParameter(MoveCommand.Direction _direction, PlayerDebug _player){
+	public MoveCommandParameter(MoveCommand.Direction _direction, Player _player){
 		m_direction = _direction;
 		m_player = _player;
 	}
 
-	public PlayerDebug Player {
+	public Player Player {
 		get { return m_player;}
 		set {m_player = value;	}
 	}

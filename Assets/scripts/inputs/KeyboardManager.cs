@@ -9,11 +9,14 @@ public class KeyboardManager : MonoBehaviour {
 	[SerializeField] string m_inputRight = "right";
 	[SerializeField] string m_inputLeft = "left";
 
+	Player m_player;
+
 	// Use this for initialization
     void Start () {
 		if (Application.platform == RuntimePlatform.Android) {
 			enabled = false;
 		}
+		m_player = FindObjectOfType<Player> ();
 	}
 	
 	// Update is called once per frame
@@ -23,14 +26,13 @@ public class KeyboardManager : MonoBehaviour {
 	}
 
 	bool CheckInput( string _input){
-		if (Input.GetKeyDown (_input)) {
-			var player = GameObject.Find("Player").GetComponent<PlayerDebug>();
+		if (Input.GetKeyDown (_input)){
 			MoveCommand command = new MoveCommand ();
 			MoveCommandParameter param;
 			if (_input == m_inputRight) {
-				param = new MoveCommandParameter (MoveCommand.Direction.RIGHT, player);
+				param = new MoveCommandParameter (MoveCommand.Direction.RIGHT, m_player);
 			} else {
-				param = new MoveCommandParameter (MoveCommand.Direction.LEFT, player);
+				param = new MoveCommandParameter (MoveCommand.Direction.LEFT, m_player);
 			}
 			CommandManager.instance.AddCommand (command,param);
 			return true;
