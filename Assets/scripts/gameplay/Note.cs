@@ -48,6 +48,8 @@ public class Note : MonoBehaviour {
 	void OnTriggerEnter2D(Collider2D other) {
 		if (other.gameObject.layer == LayerMask.NameToLayer ("Default")) {
 			m_active = false;
+			int score = PlayerPrefs.GetInt ("current_score") + 1;
+			PlayerPrefs.SetInt ("current_score", score);
 		}
 	}
 }

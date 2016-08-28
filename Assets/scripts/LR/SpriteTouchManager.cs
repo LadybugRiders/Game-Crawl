@@ -128,7 +128,7 @@ public class SpriteTouchManager : MonoBehaviour {
     bool IsJustReleased()
     {
 #if UNITY_STANDALONE || UNITY_EDITOR
-        return Input.GetMouseButtonUp(0);
+		return Input.GetMouseButtonUp(0) || Input.anyKeyDown;
 #else
 	    bool b = false;
         for (int i = 0; i < Input.touches.Length; i++) {
