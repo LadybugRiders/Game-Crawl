@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.SceneManagement;
 using System.Collections;
 
 public class GameOverManager : MonoBehaviour {
@@ -10,7 +11,9 @@ public class GameOverManager : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-	
+		if (IsJustReleased ()) {
+			SceneManager.LoadScene ("grid");
+		}
 	}
 
 	void CheckBestScore(){
@@ -19,5 +22,20 @@ public class GameOverManager : MonoBehaviour {
 		if (currentScore > bestScore) {
 			PlayerPrefs.SetInt ("best_score", currentScore);
 		}
+	}
+
+	bool IsJustReleased()
+	{
+		#if UNITY_STANDALONE || UNITY_EDITOR
+		return Input.GetMouseButtonUp(0) || Input.anyKeyDown;
+		#else
+		bool b = false;
+		for (int i = 0; i < Input.touches.Length; i++) {
+		b = Input.touches[i].phase == TouchPhase.Ended;
+		if (b)
+		break;
+		}
+		return b;
+		#endif
 	}
 }
