@@ -40,4 +40,4 @@ Build/
 # =============== #
 # Personal Scenes #
 # =============== #
-Assets/scenes/personal
+Assets/scenes/personal/*.unity
