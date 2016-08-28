@@ -21,6 +21,7 @@ public class MusicTriggerer : MonoBehaviour {
 		if (!m_launched && _other.gameObject.layer == LayerMask.NameToLayer ("Note")) {
 			m_launched = true;
 			m_musicManager.StartMusic ();
+			gameObject.SetActive (false);
 		}
 	}
 }
