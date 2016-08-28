@@ -11,10 +11,14 @@ public class Note : MonoBehaviour {
 	protected bool	m_active;
 	SpriteRenderer	m_renderer;
 
+	public enum NoteType { NORMAL, BONUS }
+	protected NoteType type = NoteType.NORMAL;
+
 	[SerializeField] float m_speed = 1.0f;
+	[SerializeField] int points = 1;
 
 	// Use this for initialization
-	void Awake () {
+	protected virtual void Awake () {
 		m_renderer = GetComponent<SpriteRenderer>();
 	}
 	
@@ -50,6 +54,18 @@ public class Note : MonoBehaviour {
 	void OnTriggerEnter2D(Collider2D other) {
 		if (other.gameObject.layer == LayerMask.NameToLayer ("Default")) {
 			m_active = false;
+		}
+	}
+
+	public NoteType Type {
+		get {
+			return type;
+		}
+	}
+
+	public int Points {
+		get {
+			return points;
 		}
 	}
 }

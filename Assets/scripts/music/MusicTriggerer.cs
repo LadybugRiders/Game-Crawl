@@ -31,7 +31,7 @@ public class MusicTriggerer : MonoBehaviour {
 	}
 
 	public void HitScore( Note _note){
-		int score = PlayerPrefs.GetInt ("current_score") + 1;
+		int score = PlayerPrefs.GetInt ("current_score") + _note.Points;
 		PlayerPrefs.SetInt ("current_score", score);
 
 		var freeText = FindFreeText ();
@@ -44,10 +44,9 @@ public class MusicTriggerer : MonoBehaviour {
 		
 		if (_other.gameObject.layer == LayerMask.NameToLayer ("Note")) {
 			//laucnh music when the first note is hit
-			if (m_musicLaunched) {
+			if (!m_musicLaunched) {
 				m_musicLaunched = true;
 				m_musicManager.StartMusic ();
-				gameObject.SetActive (false);
 			}
 			var note = _other.GetComponent<Note> ();
 			HitScore (note);

@@ -7,6 +7,8 @@ public class ScoreText : MonoBehaviour {
 	private float m_delta = 2.0f;
 	private float m_speed = 1.5f;
 
+	private float m_startY = 0;
+
 	TextMesh m_textMesh;
 	Transform m_transform;
 
@@ -24,7 +26,7 @@ public class ScoreText : MonoBehaviour {
 	void Update () {
 		if (m_alive) {
 			Utils.SetLocalPositionY(m_transform,m_transform.localPosition.y + m_speed * Time.deltaTime);
-			if (m_transform.localPosition.y > m_delta) {
+			if (m_transform.localPosition.y > m_startY + m_delta) {
 				m_alive = false;
 				gameObject.SetActive (false);
 			}
@@ -34,9 +36,14 @@ public class ScoreText : MonoBehaviour {
 	public void Launch( Note _note){
 		m_alive = true;
 		gameObject.SetActive (true);
-		Utils.SetLocalPositionY (transform,0);
+		if (_note.Type == Note.NoteType.NORMAL) {
+			Utils.SetLocalPositionY (transform, 0);
+		} else {
+			Utils.SetPositionY (transform,_note.transform.position.y);
+		}
 		Utils.SetPositionX (transform, _note.transform.position.x);
-		m_textMesh.text = "+1";
+		m_startY = transform.localPosition.y;
+		m_textMesh.text = "+" + _note.Points;
 	}
 
 	public bool IsAlive {
