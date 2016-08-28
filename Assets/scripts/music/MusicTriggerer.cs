@@ -30,7 +30,7 @@ public class MusicTriggerer : MonoBehaviour {
 	
 	}
 
-	void HitScore( Note _note){
+	public void HitScore( Note _note){
 		int score = PlayerPrefs.GetInt ("current_score") + 1;
 		PlayerPrefs.SetInt ("current_score", score);
 

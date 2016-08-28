@@ -34,11 +34,11 @@ public class NoteGridsGenerator : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 		List<uint> test = new List<uint> () {
-			1,1,0,0,1,
-			0,1,0,0,0,
-			0,0,1,0,0,
-			0,1,1,1,0,
-			0,0,1,1,0
+			0,0,0,0,0,
+			0,0,2,0,0,
+			0,0,0,0,0,
+			0,1,0,1,0,
+			0,0,1,0,0
 		};
 		GenerateGrid (test);
 		GenerateGrid (test);
@@ -53,6 +53,7 @@ public class NoteGridsGenerator : MonoBehaviour {
 	public NotesMovingGrid GenerateGrid(List<uint> _grid, bool autolaunch = true){	
 		// load prefab "Note"
 		GameObject prefabNote = Resources.Load("prefabs/Note") as GameObject;
+		GameObject prefabBonus = Resources.Load("prefabs/BonusNote") as GameObject;
 		//
 		NotesMovingGrid grid = GetFreeGrid();
 
@@ -69,13 +70,24 @@ public class NoteGridsGenerator : MonoBehaviour {
 			float x = (j * CELL_WIDTH  + CELL_WIDTH * 0.5f) * 0.01f;
 			float y = (i * CELL_HEIGHT + CELL_HEIGHT * 0.5f) * 0.01f;
 
-			Note note = grid.GetUnactiveNote ();
-			if (note == null) {
-				note = Instantiate (prefabNote).GetComponent<Note> ();
-				grid.AddNote (note);
+			Note note = null;
+			if (type == 1) {
+				note = grid.GetUnactiveNote ();
+				if (note == null) {
+					note = Instantiate (prefabNote).GetComponent<Note> ();
+					grid.AddNote (note);
+				}
+			} else {
+				note = grid.GetUnactiveBonus ();
+				if (note == null) {
+					note = Instantiate (prefabBonus).GetComponent<BonusNote> ();
+					grid.AddNote (note);
+				}
 			}
+
 			Utils.SetLocalPositionXY (note.transform, x, y);
 			note.SetActive (true);
+
 		}
 
 		if (autolaunch)

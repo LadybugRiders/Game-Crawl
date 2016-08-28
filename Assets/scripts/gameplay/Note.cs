@@ -8,7 +8,7 @@ public class Note : MonoBehaviour {
 
 	NotesGrid		m_grid;
 	ushort			m_index;
-	bool			m_active;
+	protected bool	m_active;
 	SpriteRenderer	m_renderer;
 
 	[SerializeField] float m_speed = 1.0f;

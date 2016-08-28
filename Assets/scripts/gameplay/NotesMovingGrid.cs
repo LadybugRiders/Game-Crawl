@@ -9,6 +9,7 @@ public class NotesMovingGrid : MonoBehaviour {
 	bool m_alive = false;
 
 	public List<Note> m_notes = new List<Note>();
+	public List<BonusNote> m_bonuses = new List<BonusNote> ();
 
 	private float m_speed;
 
@@ -46,8 +47,22 @@ public class NotesMovingGrid : MonoBehaviour {
 		return null;
 	}
 
+	public Note GetUnactiveBonus (){
+		foreach (var note in m_bonuses) {
+			if (! note.IsActive() ) {
+				return note;
+			}
+		}
+		return null;
+	}
+
 	public void AddNote(Note _note){
 		m_notes.Add (_note);
+		_note.transform.SetParent (m_transform, false);
+	}
+
+	public void AddBonus(BonusNote _note){
+		m_bonuses.Add (_note);
 		_note.transform.SetParent (m_transform, false);
 	}
 
