@@ -36,3 +36,8 @@ Thumbs.db
 # Build #
 # ===== #
 Build/
+
+# =============== #
+# Personal Scenes #
+# =============== #
+Assets/scenes/personal
