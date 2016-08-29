@@ -21,6 +21,12 @@ public class NoteGridsGenerator : MonoBehaviour {
 
 	[SerializeField] uint m_nbPlayableNotesPerGrid = 2;
 
+	[SerializeField] float m_timeStep = 5;
+	[SerializeField] int m_maxNotesPerGrid = 15;
+	[SerializeField] uint m_addedNotesByStep = 1;
+
+	float m_time;
+
 	public void Awake(){
 		m_grids = new List<NotesMovingGrid> ();
 		GameObject prefabGrid = Resources.Load("prefabs/MovingGrid") as GameObject;
@@ -38,7 +44,7 @@ public class NoteGridsGenerator : MonoBehaviour {
 		// init random
 		Random.seed = (int) System.DateTime.Now.Ticks;
 
-		List<uint> test = new List<uint> () {
+		/*List<uint> test = new List<uint> () {
 			0,0,0,0,0,
 			0,0,2,0,0,
 			0,0,0,0,0,
@@ -48,16 +54,23 @@ public class NoteGridsGenerator : MonoBehaviour {
 
 		GenerateNotes (test);
 		GenerateNotes (test);
-		GenerateNotes (test);
+		GenerateNotes (test);*/
 
-		/*GenerateNotes (GenerateGrid());
 		GenerateNotes (GenerateGrid());
-		GenerateNotes (GenerateGrid());*/
+		GenerateNotes (GenerateGrid());
+		GenerateNotes (GenerateGrid());
 	}
 	
 	// Update is called once per frame
 	void Update () {
 		CheckDeadGrids ();
+		m_time += Time.deltaTime;
+		if (m_time >= m_timeStep) {
+			m_time = 0;
+			if (m_nbPlayableNotesPerGrid < m_maxNotesPerGrid) {
+				m_nbPlayableNotesPerGrid += m_addedNotesByStep;
+			}
+		}
 	}
 
 	List<uint> GenerateGrid() {
@@ -163,10 +176,14 @@ public class NoteGridsGenerator : MonoBehaviour {
 	}
 
 	public void CheckDeadGrids(){
-		var bottomGrid = GetBottomGrid ();
-		if (bottomGrid && !bottomGrid.IsAlive) {
-			m_launchedGrids.Remove (bottomGrid);
-			LaunchGrid (bottomGrid);
+		for( int i = m_launchedGrids.Count -1; i >=0; i-- ){
+			var g = m_launchedGrids [i];
+			if (g && !g.IsAlive) {
+				m_launchedGrids.Remove (g);
+				//Regenerate new grid
+				var grid = GenerateNotes (GenerateGrid ());
+				LaunchGrid (grid);
+			}
 		}
 	}
 
