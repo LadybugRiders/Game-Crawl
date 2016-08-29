@@ -5,10 +5,6 @@ using System.Collections.Generic;
 public class NoteGridsGenerator : MonoBehaviour {
 
 	List<NotesMovingGrid> m_grids;
-	/// <summary>
-	/// Stack of launched grids. last element is the top grid 
-	/// </summary>
-	List<NotesMovingGrid> m_launchedGrids = new List<NotesMovingGrid>();
 
 	public static readonly ushort NB_LINES		= 6;
 	public static readonly ushort NB_COLUMNS	= 5;
@@ -27,6 +23,8 @@ public class NoteGridsGenerator : MonoBehaviour {
 
 	float m_time;
 
+    NotesMovingGrid m_lastLaunchedGrid;
+
 	public void Awake(){
 		m_grids = new List<NotesMovingGrid> ();
 		GameObject prefabGrid = Resources.Load("prefabs/MovingGrid") as GameObject;
@@ -35,6 +33,7 @@ public class NoteGridsGenerator : MonoBehaviour {
 			go.transform.SetParent (transform, false);
 
 			var grid = go.GetComponent<NotesMovingGrid> ();
+            grid.name = "grid" + i;
 			m_grids.Add (grid);
 		}
 	}
@@ -158,40 +157,61 @@ public class NoteGridsGenerator : MonoBehaviour {
 		}
 
 		if (autolaunch)
-			LaunchGrid (grid);
+        {
+            LaunchGrid(grid);
+        }
 		
 		return grid;
 	}
 
 	public void LaunchGrid(NotesMovingGrid _grid){
+        _grid.Prepare();
 		float startY = 0;
 		var topGrid = GetTopGrid ();
 		if (topGrid != null && topGrid != _grid) {
-			startY = topGrid.transform.localPosition.y + (CELL_HEIGHT * NB_LINES * 0.01f);
-		}
+            startY = topGrid.transform.localPosition.y + 5.0f;
+            //startY = topGrid.TopNote.transform.position.y - transform.localPosition.y + (CELL_HEIGHT * NB_LINES * 0.01f);// + (CELL_HEIGHT * 2 * 0.01f);
+            //startY = topGrid.transform.localPosition.y + topGrid.Height * 0.5f + _grid.Height * 0.5f + (CELL_HEIGHT * 2 * 0.01f);
+            // Debug.Log("added " + _grid.name + " at " + startY + " | top is : " + topGrid.name + " at " + topGrid.transform.localPosition.y);
+            //Debug.Log(_grid.name +" half height " + (_grid.Height *0.5f) + " | " + topGrid.name + " half height : " + (topGrid.Height/2.0f));
+        }
 		_grid.Launch (m_gridSpeed, startY);
-		m_launchedGrids.Add (_grid);
-	}
+        m_lastLaunchedGrid = _grid;
+    }
 
 	public NotesMovingGrid GetTopGrid(){
-		if (m_launchedGrids != null && m_launchedGrids.Count > 0) {
-			return m_launchedGrids [m_launchedGrids.Count - 1];
-		}
-		return null;
+        float bestY = float.MinValue;
+        NotesMovingGrid bestGrid = null;
+        foreach( var grid in m_grids)
+        {
+            if (grid.IsAlive && bestY < grid.transform.localPosition.y)
+            {
+                bestGrid = grid;
+                bestY = grid.transform.localPosition.y;
+            }
+        }
+		return bestGrid;
 	}
 
 	public NotesMovingGrid GetBottomGrid(){
-		if (m_launchedGrids != null && m_launchedGrids.Count > 0) {
-			return m_launchedGrids [0 ];
-		}
-		return null;
-	}
+        float bestY = float.MaxValue;
+        NotesMovingGrid bestGrid = null;
+        foreach (var grid in m_grids)
+        {
+            if (grid.IsAlive && bestY > grid.transform.localPosition.y)
+            {
+                bestGrid = grid;
+                bestY = grid.transform.localPosition.y;
+            }
+        }
+        return bestGrid;
+    }
 
 	public void CheckDeadGrids(){
-		for( int i = m_launchedGrids.Count -1; i >=0; i-- ){
-			var g = m_launchedGrids [i];
+		for( int i = m_grids.Count -1; i >=0; i-- ){
+			var g = m_grids[i];
 			if (g && !g.IsAlive) {
-				m_launchedGrids.Remove (g);
+				//m_launchedGrids.Remove (g);
 				//Regenerate new grid
 				var grid = GenerateNotes (GenerateGrid ());
 				LaunchGrid (grid);

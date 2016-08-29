@@ -29,13 +29,17 @@ public class NotesMovingGrid : MonoBehaviour {
 		}
 	}
 
+    public void Prepare()
+    {
+        foreach (var note in m_notes)
+            note.SetActive(true);
+        FindTopNote();
+    }
+
 	public void Launch(float _speed, float startY){
 		Utils.SetLocalPositionY (m_transform, startY);
 		m_speed = _speed;
 		m_alive = true;
-		foreach (var note in m_notes)
-			note.SetActive (true);
-		FindTopNote ();
 	}
 
 	public Note GetUnactiveNote (){
@@ -83,4 +87,14 @@ public class NotesMovingGrid : MonoBehaviour {
 		}
 		m_topNote = topnote;
 	}
+
+    public Note TopNote
+    {
+        get { return m_topNote; }
+    }
+
+    public float Height
+    {
+        get { return TopNote.transform.localPosition.y * 2; }
+    }
 }

@@ -5,8 +5,9 @@ using System.Collections;
 public class Player : MonoBehaviour {
 
 	[SerializeField] float m_step = 10;
+    [SerializeField] bool m_invincible = false;
 
-	MusicTriggerer m_triggerer;
+    MusicTriggerer m_triggerer;
 
 	int m_position = 2;
 
@@ -39,7 +40,8 @@ public class Player : MonoBehaviour {
 
 	void OnTriggerEnter2D(Collider2D other){
 		if (other.gameObject.layer == LayerMask.NameToLayer ("Note")) {
-			SceneManager.LoadScene ("game_over");
+            if( !m_invincible)
+			    SceneManager.LoadScene ("game_over");
 		}else if (other.gameObject.layer == LayerMask.NameToLayer ("Bonus")) {
 			m_triggerer.HitScore(other.GetComponent<Note>());
 		}
