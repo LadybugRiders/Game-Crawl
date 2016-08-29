@@ -1,15 +1,15 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 
-public class AStar : MonoBehaviour {
+public class AStar {
 
-	private class Node {
+	public class Node {
 		public short	index;
 		public short	parentIndex;
 		public float	cost;
 		public float	costWithHeuristic;
 
-		public int		type;
+		public uint		type;
 
 		public Node() {
 			index = 0;
@@ -24,73 +24,42 @@ public class AStar : MonoBehaviour {
 	static readonly ushort NB_COLUMNS	= 5;
 	static readonly ushort NB_LINES		= 5;
 
-	// Use this for initialization
-	void Start () {
-		List<Node> grid = new List<Node>(NB_COLUMNS * NB_LINES);
-		for (ushort i=0; i<NB_LINES; i++) {
-			for (ushort j=0; j<NB_LINES; j++) {
-				short index = (short) (i * NB_COLUMNS + j);
-				Node node = new Node();
-				node.index = index;
-				grid.Add(node);
-			}
+	List<Node>	m_grid;
+	Node		m_src;
+	Node		m_dst;
+
+	public AStar (List<uint> _grid, uint _nbColumns, uint _nbLines, int _srcIndex, int _dstIndex) {
+		int nbNodes = (int) (_nbColumns * _nbLines);
+		m_grid = new List<Node>(nbNodes);
+		for (short i=0; i<nbNodes; i++) {
+			Node node = new Node();
+			node.index = i;
+			node.type = _grid[i];
+			m_grid.Add(node);
 		}
 
-		Node src = grid[0];
-		Node dst = grid[grid.Count - 1];
-
-		grid[1].type = 1;
-		grid[6].type = 1;
-		grid[11].type = 1;
-		grid[16].type = 1;
-
-		grid[23].type = 1;
-		grid[18].type = 1;
-		grid[13].type = 1;
-		grid[8].type = 1;
-
-		string strGrid = "";
-		for (int i=0; i<NB_LINES; ++i) {
-			for (int j=0; j<NB_COLUMNS; ++j) {
-				strGrid += grid[i * NB_COLUMNS + j].index + ":" + grid[i * NB_COLUMNS + j].type + "\t| ";
-			}
-			strGrid += "\n";
-		}
-		Debug.Log(strGrid);
-
-		List<Node> path = new List<Node>();
-		Execute(grid, src, dst, path);
-
-		string strPath = "";
-		foreach (Node node in path) {
-			strPath += node.index + ", ";
-		}
-		Debug.Log(strPath);
-	}
-	
-	// Update is called once per frame
-	void Update () {
-	
+		m_src = m_grid[_srcIndex];
+		m_dst = m_grid[_dstIndex];
 	}
 
-	bool Execute(List<Node> grid, Node src, Node dst, List<Node> path) {
+	public bool Execute(List<Node> _path) {
 		List<Node> openList = new List<Node>();
 		List<Node> closeList = new List<Node>();
 
-		Node currentNode = src;
+		Node currentNode = m_src;
 
 		uint infiniteLoopChecker = 0;
 		uint maxLoops = 1000000;
 		while(infiniteLoopChecker < maxLoops) {
 			closeList.Add(currentNode);
 
-			if (currentNode == dst) {
-				ConstructPath(grid, dst, path);
+			if (currentNode == m_dst) {
+				ConstructPath(m_grid, m_dst, _path);
 				break;
 			}
 
 			// get neighbors
-			List<Node> neighbors = GetNeighbors(grid, currentNode);
+			List<Node> neighbors = GetNeighbors(m_grid, currentNode);
 
 			int nbNeighbors = neighbors.Count;
 			for (int i=0; i<nbNeighbors; ++i) {
@@ -113,13 +82,16 @@ public class AStar : MonoBehaviour {
 					}
 
 					currentNeighbor.cost = tmpCost;
-					currentNeighbor.costWithHeuristic = tmpCost + GetHeuristic(currentNeighbor, dst);
+					currentNeighbor.costWithHeuristic = tmpCost + GetHeuristic(currentNeighbor, m_dst);
 					currentNeighbor.parentIndex = currentNode.index;
 				}
 			}
 
 			// update current node
 			currentNode = GetNodeWithLowerCostToDestination(openList);
+			if (currentNode.cost >= 1000) {
+				return false;
+			}
 
 			++infiniteLoopChecker;
 		}
