@@ -165,17 +165,18 @@ public class NoteGridsGenerator : MonoBehaviour {
 	}
 
 	public void LaunchGrid(NotesMovingGrid _grid){
-        _grid.Prepare();
 		float startY = 0;
 		var topGrid = GetTopGrid ();
 		if (topGrid != null && topGrid != _grid) {
-            startY = topGrid.transform.localPosition.y + 5.0f;
+            startY = topGrid.transform.localPosition.y + 4.8f;
             //startY = topGrid.TopNote.transform.position.y - transform.localPosition.y + (CELL_HEIGHT * NB_LINES * 0.01f);// + (CELL_HEIGHT * 2 * 0.01f);
             //startY = topGrid.transform.localPosition.y + topGrid.Height * 0.5f + _grid.Height * 0.5f + (CELL_HEIGHT * 2 * 0.01f);
-            // Debug.Log("added " + _grid.name + " at " + startY + " | top is : " + topGrid.name + " at " + topGrid.transform.localPosition.y);
+            //Debug.Log("added " + _grid.name + " at " + startY + " | top is : " + topGrid.name + " at " + topGrid.transform.localPosition.y);
             //Debug.Log(_grid.name +" half height " + (_grid.Height *0.5f) + " | " + topGrid.name + " half height : " + (topGrid.Height/2.0f));
         }
 		_grid.Launch (m_gridSpeed, startY);
+        //Debug.Log(_grid.name + " "+ _grid.transform.localPosition.y);
+        //_grid.transform.localPosition.y = startY;
         m_lastLaunchedGrid = _grid;
     }
 
@@ -214,7 +215,6 @@ public class NoteGridsGenerator : MonoBehaviour {
 				//m_launchedGrids.Remove (g);
 				//Regenerate new grid
 				var grid = GenerateNotes (GenerateGrid ());
-				LaunchGrid (grid);
 			}
 		}
 	}
