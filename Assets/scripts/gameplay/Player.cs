@@ -39,7 +39,7 @@ public class Player : MonoBehaviour {
 
 	void OnTriggerEnter2D(Collider2D other){
 		if (other.gameObject.layer == LayerMask.NameToLayer ("Note")) {
-			//SceneManager.LoadScene ("game_over");
+			SceneManager.LoadScene ("game_over");
 		}else if (other.gameObject.layer == LayerMask.NameToLayer ("Bonus")) {
 			m_triggerer.HitScore(other.GetComponent<Note>());
 		}
