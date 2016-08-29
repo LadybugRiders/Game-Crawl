@@ -17,4 +17,8 @@ public class MainMenuManager : MonoBehaviour {
 		SceneManager.LoadScene ("grid");
 	}
 
+    public void OnCredits()
+    {
+        SceneManager.LoadScene("credits");
+    }
 }
