@@ -87,7 +87,7 @@ public class NoteGridsGenerator : MonoBehaviour {
 			uint nbLoopsMax = 10;
 			while (searchAgain && infiniteLoopChecker < nbLoopsMax) {
 				int x = Random.Range(0, NB_COLUMNS);
-				int y = Random.Range(0, NB_LINES);
+				int y = Random.Range(1, NB_LINES - 1);
 
 				int index = y * NB_COLUMNS + x;
 
@@ -95,7 +95,19 @@ public class NoteGridsGenerator : MonoBehaviour {
 				if (grid[index] == 0) {
 					// place a note here
 					grid[index] = 1;
-					searchAgain = false;
+
+					// check if a path is still accessible
+					AStar astar = new AStar(grid, NB_COLUMNS, NB_LINES, 0, grid.Count - 1);
+					List<AStar.Node> path = new List<AStar.Node>();
+					// if a path is found
+					if (astar.Execute(path)) {
+						// no need to search more
+						searchAgain = false;
+					}
+					else {
+						// leave the spot free
+						grid[index] = 0;
+					}
 				}
 
 				++infiniteLoopChecker;

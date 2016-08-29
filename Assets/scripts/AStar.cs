@@ -21,10 +21,9 @@ public class AStar {
 		}
 	}
 
-	static readonly ushort NB_COLUMNS	= 5;
-	static readonly ushort NB_LINES		= 5;
-
 	List<Node>	m_grid;
+	uint		m_nbColumns;
+	uint		m_nbLines;
 	Node		m_src;
 	Node		m_dst;
 
@@ -37,6 +36,9 @@ public class AStar {
 			node.type = _grid[i];
 			m_grid.Add(node);
 		}
+
+		m_nbColumns = _nbColumns;
+		m_nbLines = _nbLines;
 
 		m_src = m_grid[_srcIndex];
 		m_dst = m_grid[_dstIndex];
@@ -102,27 +104,24 @@ public class AStar {
 	List<Node> GetNeighbors(List<Node> grid, Node currentNode) {
 		List<Node> neighbors = new List<Node>();
 
-		int line	= currentNode.index / NB_COLUMNS;
-		int column	= currentNode.index % NB_COLUMNS;
+		int line	= currentNode.index / (int) m_nbColumns;
+		int column	= currentNode.index % (int) m_nbColumns;
 
 		// left
 		if (column > 0) {
 			Node neightbor = grid[currentNode.index - 1];
-			//neightbor.parentIndex = currentNode.index;
 			neighbors.Add(neightbor);
 		}
 
 		// right
-		if (column < NB_COLUMNS - 1) {
+		if (column < m_nbColumns - 1) {
 			Node neightbor = grid[currentNode.index + 1];
-			//neightbor.parentIndex = currentNode.index;
 			neighbors.Add(neightbor);
 		}
 
 		// top
-		if (line < NB_LINES - 1) {
-			Node neightbor = grid[currentNode.index + NB_LINES];
-			//neightbor.parentIndex = currentNode.index;
+		if (line < m_nbLines - 1) {
+			Node neightbor = grid[currentNode.index + (int) m_nbColumns];
 			neighbors.Add(neightbor);
 		}
 
@@ -139,11 +138,11 @@ public class AStar {
 	}
 
 	float GetHeuristic(Node node0, Node node1) {
-		int line0	= node0.index / NB_COLUMNS;
-		int column0 = node0.index % NB_COLUMNS;
+		int line0	= node0.index / (int) m_nbColumns;
+		int column0 = node0.index % (int) m_nbColumns;
 
-		int line1	= node1.index / NB_COLUMNS;
-		int column1 = node1.index % NB_COLUMNS;
+		int line1	= node1.index / (int) m_nbColumns;
+		int column1 = node1.index % (int) m_nbColumns;
 
 		return new Vector2(column1 - column0, line1 - line0).magnitude;
 	}
