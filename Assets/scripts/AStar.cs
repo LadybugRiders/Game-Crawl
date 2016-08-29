@@ -64,13 +64,13 @@ public class AStar {
 			// if destination is reached
 			if (currentNode == m_dst) {
 				// construct the path
-				ConstructPath(m_grid, m_dst, _path);
+				ConstructPath(m_dst, _path);
 				// end the process
 				break;
 			}
 
 			// get neighbors
-			List<Node> neighbors = GetNeighbors(m_grid, currentNode);
+			List<Node> neighbors = GetNeighbors(currentNode);
 
 			int nbNeighbors = neighbors.Count;
 			// for each neighbor
@@ -116,7 +116,7 @@ public class AStar {
 		return true;
 	}
 
-	List<Node> GetNeighbors(List<Node> grid, Node currentNode) {
+	List<Node> GetNeighbors(Node currentNode) {
 		List<Node> neighbors = new List<Node>();
 
 		int line	= currentNode.index / (int) m_nbColumns;
@@ -124,19 +124,19 @@ public class AStar {
 
 		// left
 		if (column > 0) {
-			Node neightbor = grid[currentNode.index - 1];
+			Node neightbor = m_grid[currentNode.index - 1];
 			neighbors.Add(neightbor);
 		}
 
 		// right
 		if (column < m_nbColumns - 1) {
-			Node neightbor = grid[currentNode.index + 1];
+			Node neightbor = m_grid[currentNode.index + 1];
 			neighbors.Add(neightbor);
 		}
 
 		// top
 		if (line < m_nbLines - 1) {
-			Node neightbor = grid[currentNode.index + (int) m_nbColumns];
+			Node neightbor = m_grid[currentNode.index + (int) m_nbColumns];
 			neighbors.Add(neightbor);
 		}
 
@@ -186,7 +186,7 @@ public class AStar {
 		return nodeWithLowestCost;
 	}
 
-	void ConstructPath(List<Node> grid, Node lastNode, List<Node> path) {
+	void ConstructPath(Node lastNode, List<Node> path) {
 		Node currentNode = lastNode;
 		bool again = true;
 		uint infiniteLoopChecker = 0;
@@ -195,7 +195,7 @@ public class AStar {
 		while (again && infiniteLoopChecker < maxLoops) {
 			path.Add(currentNode);
 			if (currentNode.parentIndex > -1) {
-				currentNode = grid[currentNode.parentIndex];
+				currentNode = m_grid[currentNode.parentIndex];
 			}
 			else {
 				again = false;
