@@ -30,11 +30,11 @@ public class NotesMovingGrid : MonoBehaviour {
 	}
 
 	public void Launch(float _speed, float startY){
-		foreach (var note in m_notes)
-			note.SetActive (true);
 		Utils.SetLocalPositionY (m_transform, startY);
 		m_speed = _speed;
 		m_alive = true;
+		foreach (var note in m_notes)
+			note.SetActive (true);
 		FindTopNote ();
 	}
 
@@ -82,11 +82,5 @@ public class NotesMovingGrid : MonoBehaviour {
 			}
 		}
 		m_topNote = topnote;
-	}
-
-	public Note TopNote {
-		get {
-			return m_topNote;
-		}
 	}
 }
