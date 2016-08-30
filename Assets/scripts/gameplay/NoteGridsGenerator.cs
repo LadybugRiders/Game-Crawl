@@ -12,6 +12,8 @@ public class NoteGridsGenerator : MonoBehaviour {
 	public static readonly ushort CELL_WIDTH	= 76;
 	public static readonly ushort CELL_HEIGHT	= 90;
 
+    private static NoteGridsGenerator _instance ;
+
 	[SerializeField] int m_nbGrids = 2;
 	[SerializeField] float m_gridSpeed = 1.3f;
 
@@ -20,13 +22,17 @@ public class NoteGridsGenerator : MonoBehaviour {
 	[SerializeField] float m_timeStep = 5;
 	[SerializeField] int m_maxNotesPerGrid = 15;
 	[SerializeField] uint m_addedNotesByStep = 1;
+    [SerializeField] int m_maxBonusesByGrid = 1;
+    [SerializeField] int m_bonusChance = 10;
 
-	float m_time;
+    float m_time;
+    int m_bonusesInGrid = 0;
 
     NotesMovingGrid m_lastLaunchedGrid;
 
 	public void Awake(){
-		m_grids = new List<NotesMovingGrid> ();
+        _instance = this;
+        m_grids = new List<NotesMovingGrid> ();
 		GameObject prefabGrid = Resources.Load("prefabs/MovingGrid") as GameObject;
 		for (int i = 0; i < m_nbGrids; i++) {
 			GameObject go = Instantiate (prefabGrid);
@@ -72,11 +78,28 @@ public class NoteGridsGenerator : MonoBehaviour {
 		}
 	}
 
+    int GetNothingOrBonus(int _existingBonuses)
+    {
+        if( _existingBonuses >= m_maxBonusesByGrid)
+        {
+            return 0;
+        }
+        int x = Random.Range(0, 100);
+        if( x < m_bonusChance )
+        {
+            return 2;
+        }
+        return 0;
+    }
+
 	List<uint> GenerateGrid() {
+        int bonuses = 0;
 		// initialize grid
 		List<uint> grid = new List<uint>(NB_LINES * NB_COLUMNS);
 		for (uint i=0; i<NB_LINES * NB_COLUMNS; i++) {
-			grid.Add(0);
+            int val = GetNothingOrBonus(bonuses);
+            bonuses += val > 0 ? 1 : 0;
+            grid.Add((uint)val);
 		}
 
 		// place playable notes
@@ -233,4 +256,22 @@ public class NoteGridsGenerator : MonoBehaviour {
 		m_grids.Add (newGrid);
 		return newGrid;
 	}
+
+    public static NoteGridsGenerator instance
+    {
+        get { return _instance; }
+    }
+
+    public float GridSpeed
+    {
+        get
+        {
+            return m_gridSpeed;
+        }
+
+        set
+        {
+            m_gridSpeed = value;
+        }
+    }
 }
