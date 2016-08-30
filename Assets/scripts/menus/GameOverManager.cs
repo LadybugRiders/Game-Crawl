@@ -26,16 +26,16 @@ public class GameOverManager : MonoBehaviour {
 
 	bool IsJustReleased()
 	{
-		#if UNITY_STANDALONE || UNITY_EDITOR
-		return Input.GetMouseButtonUp(0) || Input.anyKeyDown;
-		#else
-		bool b = false;
+#if UNITY_ANDROID
+        bool b = false;
 		for (int i = 0; i < Input.touches.Length; i++) {
 		b = Input.touches[i].phase == TouchPhase.Ended;
 		if (b)
 		break;
 		}
 		return b;
-		#endif
-	}
+#else        
+        return Input.GetMouseButtonUp(0) || Input.anyKeyDown;
+#endif
+    }
 }
