@@ -54,63 +54,77 @@ public class AStar {
 		// start with source as current node
 		Node currentNode = m_src;
 
+		bool keepSearching = true;
 		uint infiniteLoopChecker = 0;
 		uint maxLoops = 1000000;
 		// while destination isn't reached
 		while(infiniteLoopChecker < maxLoops) {
-			// current node won't be evaluated anymore
-			closeList.Add(currentNode);
-
-			// if destination is reached
-			if (currentNode == m_dst) {
-				// construct the path
-				ConstructPath(m_dst, _path);
-				// end the process
-				break;
-			}
-
-			// get neighbors
-			List<Node> neighbors = GetNeighbors(currentNode);
-
-			int nbNeighbors = neighbors.Count;
-			// for each neighbor
-			for (int i=0; i<nbNeighbors; ++i) {
-				Node currentNeighbor = neighbors[i];
-				// if the neighbor isn't in the close list
-				if (!closeList.Contains(currentNeighbor)) {
-					float tmpCost = GetCost(currentNeighbor, currentNode);
-
-					// if the current node is already in the open list
-					if (openList.Contains(currentNeighbor)) {
-						// if the cost is higher
-						if (tmpCost >= currentNeighbor.cost) {
-							// no need to go this way
-							continue;
-						}
-					}
-					else {
-						// otherwise, put it in the open list
-						openList.Add(currentNeighbor);
-					}
-
-					// current neighbor is "valid"
-					// update it's data (cost + parent)
-					currentNeighbor.cost = tmpCost;
-					currentNeighbor.costWithHeuristic = tmpCost + GetHeuristic(currentNeighbor, m_dst);
-					currentNeighbor.parentIndex = currentNode.index;
-				}
-			}
-
-			// update current node
-			currentNode = GetNodeWithLowerCostToDestination(openList);
-
-			// if the node with lower cost is an "invalid" node
-			if (currentNode.cost >= 1000) {
-				// no solution can be found
-				return false;
-			}
+			keepSearching = ProcessNode(currentNode, openList, closeList);
 
 			++infiniteLoopChecker;
+		}
+
+		// return true if destination is reached, false otherwise
+		if (currentNode == m_dst) {
+			// construct the path
+			ConstructPath(m_dst, _path);
+
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+
+	bool ProcessNode(Node _currentNode, List<Node> _openList, List<Node> _closeList) {
+		// current node won't be evaluated anymore
+		_closeList.Add(_currentNode);
+
+		// if destination is reached
+		if (_currentNode == m_dst) {
+			// end the process now
+			return false;
+		}
+
+		// get neighbors
+		List<Node> neighbors = GetNeighbors(_currentNode);
+
+		int nbNeighbors = neighbors.Count;
+		// for each neighbor
+		for (int i=0; i<nbNeighbors; ++i) {
+			Node currentNeighbor = neighbors[i];
+			// if the neighbor isn't in the close list
+			if (!_closeList.Contains(currentNeighbor)) {
+				float tmpCost = GetCost(currentNeighbor, _currentNode);
+
+				// if the current node is already in the open list
+				if (_openList.Contains(currentNeighbor)) {
+					// if the cost is higher
+					if (tmpCost >= currentNeighbor.cost) {
+						// no need to go this way
+						continue;
+					}
+				}
+				else {
+					// otherwise, put it in the open list
+					_openList.Add(currentNeighbor);
+				}
+
+				// current neighbor is "valid"
+				// update it's data (cost + parent)
+				currentNeighbor.cost = tmpCost;
+				currentNeighbor.costWithHeuristic = tmpCost + GetHeuristic(currentNeighbor, m_dst);
+				currentNeighbor.parentIndex = _currentNode.index;
+			}
+		}
+
+		// update current node
+		_currentNode = GetNodeWithLowerCostToDestination(_openList);
+
+		// if the node with lower cost is an "invalid" node
+		if (_currentNode.cost >= 1000) {
+			// no solution can be found
+			return false;
 		}
 
 		return true;
